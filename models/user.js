@@ -1,7 +1,8 @@
 const config = require("config");
 const jwt = require("jsonwebtoken");
-const Joi = require("joi");
 const mongoose = require("mongoose");
+const Joi = require('joi');
+
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -10,18 +11,22 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 50
   },
-  email: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 255,
-    unique: true
-  },
+ 
   password: {
     type: String,
     required: true,
     minlength: 5,
     maxlength: 1024
+  },
+  phone:{
+    type: String,
+    validate: {
+      validator: function(v) {
+        return /\d{10}/.test(v);
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    },
+    required: [true, 'User phone number required']
   },
   isAdmin: Boolean
 });
@@ -31,7 +36,7 @@ userSchema.methods.generateAuthToken = function() {
     {
       _id: this._id,
       name: this.name,
-      email: this.email,
+      phone: this.phone,
       isAdmin: this.isAdmin
     },
     config.get("jwtPrivateKey")
@@ -40,25 +45,8 @@ userSchema.methods.generateAuthToken = function() {
 };
 
 
-userSchema.statics.findByCredentials = function(email, password) {
-	var User = this;
-
-	return User.findOne({ email }).then((user) => {
-		// console.log(user)
-		if (!user) return Promise.reject();
-
-		return new Promise((resolve, reject) => {
-			bcrypt.compare(password, user.password, (err, val) => {
-				if (val) {
-					resolve(user);
-				} else reject();
-			});
-		});
-	});
-};
-
-
 const User = mongoose.model("User", userSchema);
+
 
 function validateUser(user) {
   const schema = {
@@ -66,17 +54,12 @@ function validateUser(user) {
       .min(2)
       .max(50)
       .required(),
-    email: Joi.string()
-      .min(5)
-      .max(255)
-      .required()
-      .email(),
     password: Joi.string()
       .min(5)
       .max(255)
-      .required()
+      .required(),
+    phone:Joi.string().min(10).max(10).required(),
   };
-
   return Joi.validate(user, schema);
 }
 
