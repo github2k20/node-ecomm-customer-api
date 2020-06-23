@@ -1,0 +1,7 @@
+{
+  "jwtPrivateKey": "my_jwtPrivateKey",
+  "db": "mongodb://localhost/ecomm-retailer",
+  "port": "3000",
+  "requiresAuth": true,
+  "NODE_ENV":"development"
+}
