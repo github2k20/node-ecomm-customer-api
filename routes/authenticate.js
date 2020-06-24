@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
   if (!validPassword) return res.status(400).send('Invalid phone number or password.');
 
   const token = user.generateAuthToken();
-  res.send(token);
+  res.headers('x-auth-token',token).send(user);
 });
 
 function validate(req) {
