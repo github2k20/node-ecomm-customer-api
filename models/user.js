@@ -27,7 +27,17 @@ const userSchema = new mongoose.Schema({
     },
     required: [true, 'User phone number required']
   },
-  isAdmin: Boolean
+  isAdmin: Boolean,
+  orders:[{
+    completed:{
+      type:Boolean,
+      default:false
+    },
+    order:{
+      type: mongoose.Schema.ObjectId, ref: "Order" 
+    }
+
+  }]
 });
 
 userSchema.methods.generateAuthToken = function() {

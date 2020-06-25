@@ -15,6 +15,14 @@ router.get("/", async (req, res) => {
   res.send(products);
 });
 
+
+router.get("/category/:id", async (req, res) => {
+  const products = await Product.find({category:req.params.id})
+    .select("-__v")
+    .sort("name");
+  res.send(products);
+});
+
 router.post("/", [auth], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
