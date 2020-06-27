@@ -27,15 +27,35 @@ const userSchema = new mongoose.Schema({
     },
     required: [true, 'User phone number required']
   },
-  isAdmin: Boolean,
-  orders:[{
-    completed:{
+  location:{
+    type:String,
+    required:true,
+  },
+  cart:[{
+    product:
+    {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Product'
+    },
+    quantity:
+    {
+        type:Number,
+        default: 1
+    } 
+  }],
+
+  orders:[
+    {
+    completed:
+    {
       type:Boolean,
       default:false
     },
-    order:{
-      type: mongoose.Schema.ObjectId, ref: "Order" 
-    }
+    product:
+    {
+      type: mongoose.Schema.Types.ObjectId, ref: 'Product'
+    },
+    quantity:{type:Number,default: 1}
 
   }]
 });
@@ -46,7 +66,7 @@ userSchema.methods.generateAuthToken = function() {
       _id: this._id,
       name: this.name,
       phone: this.phone,
-      isAdmin: this.isAdmin
+     
     },
     process.env.JWT_SECRET
   );
@@ -68,6 +88,12 @@ function validateUser(user) {
       .max(255)
       .required(),
     phone:Joi.string().min(10).max(10).required(),
+    location: Joi.string()
+      .min(2)
+      .max(50)
+      .required(),
+      cart:Joi.array(),
+      orders:Joi.array()
   };
   return Joi.validate(user, schema);
 }
