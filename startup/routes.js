@@ -10,4 +10,7 @@ module.exports = function(app) {
   app.use('/api/users', users);
   app.use('/api/login', authenticate);
   app.use(error);
+  app.get("*", function (req, res) {
+    res.send("404 Error");
+  });
 }
